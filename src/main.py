@@ -2,20 +2,22 @@ import json
 import os
 import pathlib
 
+import json5
 import pick
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-from data import level_mappings
-
+# Stringifying the environment variable makes type checkers shut up
 save_folder = (
-    # Stringifying the environment variable makes type checkers shut up
     pathlib.Path(str(os.getenv("LOCALAPPDATA")) + "Low")
     / "7th Beat Games"
     / "Rhythm Doctor"
 )
 saves = {}
+
+with open("data.json5") as f:
+    level_mappings = json5.load(f)
 
 console = Console()
 print = console.print
@@ -23,7 +25,10 @@ print = console.print
 
 # Todo
 def walk_through_settings(rd_save: dict):
-    pass
+    # https://discord.com/channels/296802696243970049/298297906509774848/1287309972018827397
+    # it's author + artist + song through md5
+    table = Table("Custom Levels")
+    print(table)
 
 
 def walk_through_save(rd_save: dict):
@@ -56,14 +61,17 @@ def walk_through_save(rd_save: dict):
             attempts = str(attempts)
 
             if level_mappings[act][level_id].get("is_boss"):
-                # Todo: Text styling for perfect bosses, which means you need to beat one first :(
+                # Todo: Text styling for perfect bosses, which means I need to beat one first :(
+                # Also completed w/o checkpoints is a completely separate thing?? How many boss ranks are there
                 name = name + Text(" (Boss)", style="magenta")
 
                 if rank == "NotFinished":
                     rank = "Incomplete"
-                else:
+                elif rank == "A":
                     # RD doesn't give a rank to bosses, it just marks it as A if you've completed it
                     rank = "Completed"
+                else:
+                    rank = "Unknown rank! Contact the repo owner!"
             else:
                 if rank == "NotFinished":
                     rank = "Unplayed"
@@ -80,7 +88,9 @@ def walk_through_save(rd_save: dict):
             if level_mappings[act][level_id].get("is_bonus"):
                 name = name + Text(" (Bonus)", style="magenta")
                 try:
-                    attempts = f"{attempts} (Score: {rd_save[f'Level_{level_id}_score']})"
+                    attempts = (
+                        f"{attempts} (Score: {rd_save[f'Level_{level_id}_score']})"
+                    )
                 except KeyError:
                     # Prevent crashes if a player hasn't attempted the bonus level yet
                     pass

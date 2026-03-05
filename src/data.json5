@@ -1,26 +1,35 @@
-from rich.console import Console
-
-console = Console()
-print = console.print
-
-# Abomination
-level_mappings = {
+{
     "Act 1": {
-        # theme of really spooky bird will be added when I get it in my save file
-        "OrientalTechno": {"designator": "1-1", "name": "Samurai Techno"},
-        "Intimate": {"designator": "1-2", "name": "Intimate"},
+        // theme of really spooky bird will be added when I get it in my save file
+        "OrientalTechno": {
+            "designator": "1-1",
+            "name": "Samurai Techno"
+        },
+        "Intimate": {
+            "designator": "1-2", 
+            "name": "Intimate"
+        },
         "OrientalInsomniac": {
             "designator": "1-X",
             "name": "Battleworn Insomniac",
-            "is_boss": True,
+            "is_boss": true,
         },
-        "GongXi": {"designator": "1-CNY", "name": "Chinese New Year"},
-        "OrientalDubstep": {"designator": "1-1N", "name": "Samurai Dubstep"},
-        "IntimateH": {"designator": "1-2N", "name": "Intimate (Night)"},
+        "GongXi": {
+            "designator": "1-CNY",
+            "name": "Chinese New Year"
+        },
+        "OrientalDubstep": {
+            "designator": "1-1N",
+            "name": "Samurai Dubstep"
+        },
+        "IntimateH": {
+            "designator": "1-2N",
+            "name": "Intimate (Night)"
+        },
         "InsomniacHard": {
             "designator": "1-XN",
             "name": "Super Battleworn Insomniac",
-            "is_boss": True,
+            "is_boss": true,
         },
     },
     "Act 2": {
@@ -39,17 +48,17 @@ level_mappings = {
         "SongOfTheSea": {
             "designator": "2-4",
             "name": "Song of the Sea",
-            "is_intermission": True,
+            "is_intermission": true,
         },
         "Boss2": {
             "designator": "2-X",
             "name": "All The Times",
-            "is_boss": True,
+            "is_boss": true,
         },
         "BeansHopper": {
             "designator": "2-B1",
             "name": "Beans Hopper",
-            "is_bonus": True,
+            "is_bonus": true,
         },
         "CareLess": {
             "designator": "2-1N",
@@ -66,12 +75,12 @@ level_mappings = {
         "SongOfTheSeaH": {
             "designator": "2-4N",
             "name": "Song of the Sea (Night)",
-            "is_intermission": True,
+            "is_intermission": true,
         },
         "Bitterness": {
             "designator": "2-XN",
             "name": "Bitter Times",
-            "is_boss": True,
+            "is_boss": true,
         },
     },
     "Act 3": {
@@ -90,9 +99,9 @@ level_mappings = {
         "Lesmis": {
             "designator": "3-X",
             "name": "One Shift More",
-            "is_boss": True,
+            "is_boss": true,
         },
-        # Rhythm Dogtor
+        // Rhythm Dogtor
         "Lounge": {
             "designator": "3-1N",
             "name": "Lounge",
@@ -105,12 +114,12 @@ level_mappings = {
             "designator": "3-3N",
             "name": "Distant Duet (Night)",
         },
-        # Unused: See https://wiki.rhythm.cafe/page/G_And_Tonic
-        # "GAndTonic": {
-        #     "designator": "3-B1",
-        #     "name": "G And Tonic",
-        #     "is_bonus": True,
-        # }
+        // Unused: See https://wiki.rhythm.cafe/page/G_And_Tonic
+        // "GAndTonic": {
+        //     "designator": "3-B1",
+        //     "name": "G And Tonic",
+        //     "is_bonus": true,
+        // }
     },
     "Act 4": {
         "Heldbeats": {
@@ -158,17 +167,17 @@ level_mappings = {
         "AthleteTherapy": {
             "designator": "5-3",
             "name": "Seventh-Inning Stretch",
-            "is_intermission": True,
+            "is_intermission": true,
         },
         "RhythmWeightlifter": {
             "designator": "5-B1",
             "name": "Rhythm Weightlifter",
-            "is_bonus": True,
+            "is_bonus": true,
         },
         "AthleteFinale": {
             "designator": "5-X",
             "name": "Dreams Don't Stop",
-            "is_boss": True,
+            "is_boss": true,
         },
         "Injury": {
             "designator": "5-1N",
@@ -195,7 +204,7 @@ level_mappings = {
         "PaigesReckoning": {
             "designator": "6-3",
             "name": "Boss Fight",
-            "is_boss": True,
+            "is_boss": true,
         },
     },
     "Act 7": {
@@ -206,12 +215,12 @@ level_mappings = {
         "Montage": {
             "designator": "7-X",
             "name": "Miracle Defibrillator",
-            "is_boss": True,
+            "is_boss": true,
         },
         "Montage2": {
             "designator": "7-X2",
             "name": "Miracle Defibrillator (Cole's Song)",
-            "is_boss": True,
+            "is_boss": true,
         },
     },
     "Art Room": {
@@ -237,7 +246,10 @@ level_mappings = {
             "designator": "X-KOB",
             "name": "Kingdom of Balloons",
         },
-        "VividStasis": {"designator": "X-FTS", "name": "Fixations Toward the Stars"},
+        "VividStasis": {
+            "designator": "X-FTS",
+            "name": "Fixations Toward the Stars",
+        },
     },
     "Muse Dash Collab": {
         "BlackestLuxuryCar": {
@@ -254,13 +266,3 @@ level_mappings = {
         },
     },
 }
-
-
-if __name__ == "__main__":
-    # Generates the schema
-    for act in range(1, 7 + 1):
-        level_mappings[f"Act {act}"] = {
-            "id": {"designator": None, "name": None, "is_boss": False}
-        }
-
-    print(level_mappings)
