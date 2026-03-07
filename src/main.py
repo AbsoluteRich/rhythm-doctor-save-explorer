@@ -4,6 +4,7 @@ import pathlib
 
 import json5
 import pick
+from rich import print
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
@@ -20,7 +21,6 @@ with open("data.json5") as f:
     level_mappings = json5.load(f)
 
 console = Console()
-print = console.print
 
 
 # Todo
@@ -32,8 +32,6 @@ def walk_through_settings(rd_save: dict):
 
 
 def walk_through_save(rd_save: dict):
-    # console.rule("Act 1")
-
     for act in level_mappings:
         table = Table(title=act)
         table.add_column("Level")
@@ -43,7 +41,6 @@ def walk_through_save(rd_save: dict):
         for level_id in level_mappings[act]:
             try:
                 rank = rd_save[f"Level_{level_id}_rank"]
-                # del rd_save[f"Level_{level_id}_rank"]  # Debug
             except KeyError:
                 table.add_row("???", "Unplayed", "0")
                 continue
@@ -55,14 +52,12 @@ def walk_through_save(rd_save: dict):
 
             try:
                 attempts = rd_save[f"{level_id}_tries"]
-                # del rd_save[f"{level_id}_tries"]  # Debug
             except KeyError:
                 attempts = 0
             attempts = str(attempts)
 
             if level_mappings[act][level_id].get("is_boss"):
-                # Todo: Text styling for perfect bosses, which means I need to beat one first :(
-                # Also completed w/o checkpoints is a completely separate thing?? How many boss ranks are there
+                # Completed w/o checkpoints is a completely separate thing?? How many boss ranks are there
                 name = name + Text(" (Boss)", style="magenta")
 
                 if rank == "NotFinished":
@@ -70,6 +65,8 @@ def walk_through_save(rd_save: dict):
                 elif rank == "A":
                     # RD doesn't give a rank to bosses, it just marks it as A if you've completed it
                     rank = "Completed"
+                elif rank == "S+":
+                    rank = Text("Perfect!", style="yellow")
                 else:
                     rank = "Unknown rank! Contact the repo owner!"
             else:
@@ -98,30 +95,21 @@ def walk_through_save(rd_save: dict):
             table.add_row(designator + " " + name, rank, attempts)
 
         print(table)
-    # print(sorted(rd_save.keys()))  # Debug
 
-
-# for file in save_folder.iterdir():
-#     print(file)
 
 if __name__ == "__main__":
     for save_file in save_folder.glob("*.rdsave"):
-        with save_file.open() as f:
-            save = json.loads(f.read()[3:])
-
+        # RD saves actually start with a UTF-8 BOM, so the old solution of slicing off the first few characters was incorrect
+        with save_file.open(encoding="utf-8-sig") as f:
+            save = json.loads(f.read())
             saves[save_file.name.split(".")[0]] = save
-            # print(json.dumps(save, sort_keys=True, indent=4))
 
     option, _ = pick.pick(
-        ["Settings", "Slot 1", "Slot 2", "Slot 3"],
+        list(saves.keys()),
         "Select which save file you wish to browse:",
     )
-    match option:
-        case "Settings":
-            walk_through_settings(saves["settings"])
-        case "Slot 1":
-            walk_through_save(saves["slot0"])
-        case "Slot 2":
-            walk_through_save(saves["slot1"])
-        case "Slot 3":
-            walk_through_save(saves["slot2"])
+
+    if option == "settings":
+        walk_through_settings(saves["settings"])
+    else:
+        walk_through_save(saves[option])
