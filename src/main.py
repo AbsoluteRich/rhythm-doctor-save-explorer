@@ -36,7 +36,7 @@ def walk_through_save(rd_save: dict):
         table = Table(title=act)
         table.add_column("Level")
         table.add_column("Rank")
-        table.add_column("Attempts")  # Not implemented yet
+        table.add_column("Attempts")
 
         for level_id in level_mappings[act]:
             try:
@@ -57,13 +57,16 @@ def walk_through_save(rd_save: dict):
             attempts = str(attempts)
 
             if level_mappings[act][level_id].get("is_boss"):
-                # Completed w/o checkpoints is a completely separate thing?? How many boss ranks are there
+                
                 name = name + Text(" (Boss)", style="magenta")
 
+                # RD doesn't give a rank to bosses, it just marks it as A if you've completed it
                 if rank == "NotFinished":
                     rank = "Incomplete"
+                elif rank == "A+":
+                    # Completed w/o checkpoints is a completely separate thing?? How many boss ranks are there
+                    rank = "Completed without checkpoints!"
                 elif rank == "A":
-                    # RD doesn't give a rank to bosses, it just marks it as A if you've completed it
                     rank = "Completed"
                 elif rank == "S+":
                     rank = Text("Perfect!", style="yellow")
@@ -98,6 +101,8 @@ def walk_through_save(rd_save: dict):
 
 
 if __name__ == "__main__":
+    # 100% save file, for reference: https://steamcommunity.com/app/774181/discussions/0/693120275093500198/
+
     for save_file in save_folder.glob("*.rdsave"):
         # RD saves actually start with a UTF-8 BOM, so the old solution of slicing off the first few characters was incorrect
         with save_file.open(encoding="utf-8-sig") as f:
