@@ -22,6 +22,9 @@ custom_levels_folder = platformdirs.user_documents_path() / "Rhythm Doctor" / "L
 rd_saves = {}
 custom_levels = {}
 
+spoilers = False
+spoiler_label = "Spoilers: OFF"
+
 with open("data.json5") as f:
     level_mappings = json5.load(f)
 
@@ -141,9 +144,7 @@ def walk_through_save(save: dict):
             if level_mappings[act][level_id].get("is_bonus"):
                 name = name + Text(" (Bonus)", style="magenta")
                 try:
-                    attempts = (
-                        f"{attempts} (Score: {save[f'Level_{level_id}_score']})"
-                    )
+                    attempts = f"{attempts} (Score: {save[f'Level_{level_id}_score']})"
                 except KeyError:
                     # Prevent crashes if a player hasn't attempted the bonus level yet
                     pass
@@ -163,11 +164,17 @@ if __name__ == "__main__":
             rd_saves[save_file.name.split(".")[0]] = save
 
     option, _ = pick(
-        list(rd_saves.keys()),
+        [spoiler_label] + list(rd_saves.keys()) + ["Exit"],
         "Select which save file you wish to browse:",
     )
 
-    if option == "settings":
-        walk_through_settings(rd_saves["settings"])
-    else:
-        walk_through_save(rd_saves[option])
+    while True:
+        if option == "Exit":
+            break
+        elif option == spoiler_label:
+            spoilers = not spoilers
+            spoiler_label = "Spoilers: ON" if spoilers else "Spoilers: OFF"
+        elif option == "settings":
+            walk_through_settings(rd_saves["settings"])
+        else:
+            walk_through_save(rd_saves[option])
