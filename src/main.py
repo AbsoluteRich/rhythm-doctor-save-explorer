@@ -98,7 +98,8 @@ def walk_through_save(save: dict):
             try:
                 rank = save[f"Level_{level_id}_rank"]
             except KeyError:
-                table.add_row("???", "Unplayed", "0")
+                if spoilers:
+                    table.add_row("???", "Unplayed", "0")
                 continue
 
             designator = Text(
@@ -151,7 +152,8 @@ def walk_through_save(save: dict):
 
             table.add_row(designator + " " + name, rank, attempts)
 
-        print(table)
+        if table.rows:
+            print(table)
 
 
 if __name__ == "__main__":
@@ -163,12 +165,12 @@ if __name__ == "__main__":
             save = json.load(f)
             rd_saves[save_file.name.split(".")[0]] = save
 
-    option, _ = pick(
-        [spoiler_label] + list(rd_saves.keys()) + ["Exit"],
-        "Select which save file you wish to browse:",
-    )
-
     while True:
+        option, _ = pick(
+            [spoiler_label] + list(rd_saves.keys()) + ["Exit"],
+            "Select which save file you wish to browse:",
+        )
+
         if option == "Exit":
             break
         elif option == spoiler_label:
@@ -176,5 +178,7 @@ if __name__ == "__main__":
             spoiler_label = "Spoilers: ON" if spoilers else "Spoilers: OFF"
         elif option == "settings":
             walk_through_settings(rd_saves["settings"])
+            break
         else:
             walk_through_save(rd_saves[option])
+            break
