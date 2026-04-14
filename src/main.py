@@ -6,7 +6,6 @@ from pathlib import Path
 import json5
 import platformdirs
 from pick import pick
-from rich import print
 from rich.console import Console
 from rich.progress import Progress
 from rich.table import Table
@@ -19,20 +18,17 @@ save_folder = (
 )
 # Why is it just platformdirs that can accurately find the Documents folder??
 custom_levels_folder = platformdirs.user_documents_path() / "Rhythm Doctor" / "Levels"
-rd_saves = {}
-custom_levels = {}
+output_folder = Path(Path.cwd() / "output")
 
-spoilers = False
-spoiler_label = "Spoilers: OFF"
+if not output_folder.exists():
+    output_folder.mkdir()
 
 with open("data.json5") as f:
     level_mappings = json5.load(f)
 
-console = Console()
-
 
 # Might extend this to show other hidden bits about custom levels, but for now just showing the ranks is good enough
-def walk_through_settings(save: dict):
+def walk_through_settings(save: dict) -> None:
     table = Table(title="Custom Levels")
     table.add_column("Level")
     table.add_column("Rank")
@@ -84,10 +80,10 @@ def walk_through_settings(save: dict):
             progress.update(progress_bar, description=description)
 
     console.rule()
-    print(table)  # Todo: Move the extracted data into the table
+    console.print(table)  # Todo: Move the extracted data into the table
 
 
-def walk_through_save(save: dict):
+def walk_through_save(save: dict) -> None:
     for act in level_mappings:
         table = Table(title=act)
         table.add_column("Level")
@@ -98,7 +94,7 @@ def walk_through_save(save: dict):
             try:
                 rank = save[f"Level_{level_id}_rank"]
             except KeyError:
-                if spoilers:
+                if explorer_settings["Spoilers"]:
                     table.add_row("???", "Unplayed", "0")
                 continue
 
@@ -153,11 +149,39 @@ def walk_through_save(save: dict):
             table.add_row(designator + " " + name, rank, attempts)
 
         if table.rows:
-            print(table)
+            console.print(table)
+
+            if explorer_settings["Save to file"]:
+
+                with open(f"output/{table.title}.txt", "w", encoding="utf-8") as f:
+                    f.write(console.export_text())
+                print("Saved to file.")
+
+
+def generate_user_options() -> list:
+    input_options = []
+
+    for setting in explorer_settings:
+        if explorer_settings[setting]:
+            input_options.append(f"{setting}: ON")
+        else:
+            input_options.append(f"{setting}: OFF")
+    input_options.extend(rd_saves.keys())
+    input_options.append("Exit")
+
+    return input_options
 
 
 if __name__ == "__main__":
     # 100% save file, for reference: https://steamcommunity.com/app/774181/discussions/0/693120275093500198/
+    rd_saves = {}
+    custom_levels = {}
+    explorer_settings = {
+        "Spoilers": False,
+        "Save to file": False,
+    }
+
+    console = Console(record=True)
 
     for save_file in save_folder.glob("*.rdsave"):
         # RD saves actually start with a UTF-8 BOM, so the old solution of slicing off the first few characters was incorrect
@@ -167,15 +191,16 @@ if __name__ == "__main__":
 
     while True:
         option, _ = pick(
-            [spoiler_label] + list(rd_saves.keys()) + ["Exit"],
-            "Select which save file you wish to browse:",
+            generate_user_options(), "Select which save file you wish to browse:"
         )
 
         if option == "Exit":
             break
-        elif option == spoiler_label:
-            spoilers = not spoilers
-            spoiler_label = "Spoilers: ON" if spoilers else "Spoilers: OFF"
+        elif ":" in option:
+            key, value = str(option).split(":")
+            value = True if value == "ON" else False
+            value = not value
+            explorer_settings[key] = value
         elif option == "settings":
             walk_through_settings(rd_saves["settings"])
             break
