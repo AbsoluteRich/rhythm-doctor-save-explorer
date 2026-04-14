@@ -9,7 +9,7 @@ OUTPUT_FOLDER = Path(Path.cwd() / "output")
 
 
 def walk_through_save(
-    save: dict, spoilers: bool = False, save_to_file: bool = False
+    save: dict, hide_locked_levels: bool = True, save_to_file: bool = False
 ) -> None:
     level_mappings = core.load_mappings()
 
@@ -23,7 +23,7 @@ def walk_through_save(
             try:
                 rank = save[f"Level_{level_id}_rank"]
             except KeyError:
-                if not spoilers:
+                if not hide_locked_levels:
                     table.add_row("???", "Unplayed", "0")
                 continue
 

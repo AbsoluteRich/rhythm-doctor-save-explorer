@@ -24,9 +24,10 @@ def walk_through_settings(save: dict) -> None:
             progress_bar = progress.add_task(
                 f"Processing {level.stem}...", start=False, total=None
             )
-            # These two lines make type checkers shut up about unbound variables
-            level_hash = ""
-            song = ""
+            level_hash = None
+            author = None
+            artist = None
+            song = None
 
             with open(level / "main.rdlevel", encoding="utf-8-sig") as f:
                 # JSON 5 allows trailing commas, which level files include

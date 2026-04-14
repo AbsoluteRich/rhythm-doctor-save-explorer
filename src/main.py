@@ -5,7 +5,7 @@ import custom_levels
 import story_mode
 
 explorer_settings = {
-    "Spoilers": False,
+    "Hide locked levels": True,
     "Save to file": False,
 }
 
@@ -36,18 +36,21 @@ if __name__ == "__main__":
 
         if option == "Exit":
             break
+
         elif ":" in option:
-            key, value = str(option).split(":")
+            key, value = str(option).split(": ")
             value = True if value == "ON" else False
             value = not value
             explorer_settings[key] = value
+
         elif option == "settings":
             custom_levels.walk_through_settings(rd_saves["settings"])
             break
+
         else:
             story_mode.walk_through_save(
                 rd_saves[option],
-                explorer_settings["Spoilers"],
+                explorer_settings["Hide locked levels"],
                 explorer_settings["Save to file"],
             )
             break
